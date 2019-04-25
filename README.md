@@ -4,9 +4,6 @@ In this paper, we perform metainference metadynamics simulations to characterise
 
 There are two subdirectories containing relevant input files to rerun the simulations for the apo and holo systems. 
 
-These files include:
-Forcefield parameters
-NMR data used as restraints
-PLUMED input files
-Topology files
-Reference PDB files for the peptide and the small molecule.
+These files include: Forcefield parameters, NMR data used as restraints, PLUMED input files, topology files, Reference PDB files for the peptide and the small molecule. 
+
+We used PLUMED 2.3.0-dev and GROMACS 4.6.7. PLUMED scripts have been updated to version 2.5.
