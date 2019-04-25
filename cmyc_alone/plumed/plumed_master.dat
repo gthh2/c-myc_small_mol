@@ -1,0 +1,34 @@
+#this is the master_plumed.dat file for metainference metadynamics simulations
+MOLINFO STRUCTURE=../system/template.pdb
+
+# define protein atoms and make molecule whole
+prot: GROUP ATOMS=1-191
+WHOLEMOLECULES ENTITY0=prot
+
+#include file with definition of metadynamics CVs
+INCLUDE FILE=meta_cv_plumed.dat
+
+#activate parallel bias metadynamics 
+PBMETAD ... #activating start
+LABEL=pbmetad #to print out things
+ARG=ahelixright,betasheet,ahelixleft,polypro,rgyr,ohbond
+PACE=500 HEIGHT=1.2 BIASFACTOR=10 WALKERS_MPI 
+SIGMA=1.01,0.89,0.41,0.72,0.05,0.71
+FILE=HILLS_ahelixright,HILLS_betasheet,HILLS_ahelixleft,HILLS_polypro,HILLS_rgyr,HILLS_ohbond
+GRID_MIN=-2,-2,-2,-2,0.2,0
+GRID_MAX=20,20,20,20,1.4,30
+#actual min and max are slightly different, but allowing for gaussian distribution around it
+... PBMETAD
+
+#include file with definition of experimental CVs
+INCLUDE FILE=exp_cv_plumed.dat
+
+# metainference stuff
+mi_cs_ha: METAINFERENCE ARG=(cs\.ha_.*),pbmetad.bias PARARG=(cs\.expha_.*) REWEIGHT NOISETYPE=GAUSS SIGMA0=1.0 SIGMA_MIN=0.00001 SIGMA_MAX=10.0 DSIGMA=0.5 SIGMA_MEAN0=0.645 
+mi_cs_hn: METAINFERENCE ARG=(cs\.hn_.*),pbmetad.bias PARARG=(cs\.exphn_.*) REWEIGHT NOISETYPE=GAUSS SIGMA0=1.0 SIGMA_MIN=0.00001 SIGMA_MAX=10.0 DSIGMA=0.5 SIGMA_MEAN0=0.645 
+mi_cs_ca: METAINFERENCE ARG=(cs\.ca_.*),pbmetad.bias PARARG=(cs\.expca_.*) REWEIGHT NOISETYPE=GAUSS SIGMA0=1.0 SIGMA_MIN=0.00001 SIGMA_MAX=10.0 DSIGMA=0.5 SIGMA_MEAN0=0.645 
+mi_cs_cb: METAINFERENCE ARG=(cs\.cb_.*),pbmetad.bias PARARG=(cs\.expcb_.*) REWEIGHT NOISETYPE=GAUSS SIGMA0=1.0 SIGMA_MIN=0.00001 SIGMA_MAX=10.0 DSIGMA=0.5 SIGMA_MEAN0=0.645 
+
+#print out relavant info
+PRINT STRIDE=200 ARG=ahelixright,betasheet,ahelixleft,polypro,rgyr,ohbond,pbmetad.bias FILE=COLVAR_PBMETAD
+PRINT STRIDE=200 ARG=mi_cs_ha.*,mi_cs_hn.*,mi_cs_ca.*,mi_cs_cb.* FILE=COLVAR_MI

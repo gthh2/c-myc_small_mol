@@ -1,0 +1,2 @@
+# chemical shifts
+cs: CS2BACKBONE ATOMS=7-188 TEMPLATE=../system/template.pdb DATADIR=../data NOPBC
